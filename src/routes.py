@@ -72,12 +72,10 @@ def list_prospects():
 def upload_csv():
     if request.method == "POST":
         file = request.files.get("file")
-        print(request.form.get("shop_name"))
         shop_name = request.form.get("shop_name", "").strip()
-
         address = request.form.get("address", "").strip()
-        print(shop_name)
         phone = request.form.get("phone", "").strip()
+
         if not file or file.filename == "":
             flash("CSVファイルを選択してください", "error")
             return render_template("upload.html")
@@ -88,48 +86,47 @@ def upload_csv():
         try:
             stream = io.StringIO(file.stream.read().decode("utf-8-sig"))
             reader = csv.DictReader(stream)
-        except Exception:
+            print("CSVヘッダー:", reader.fieldnames)
+        except Exception as e:
+            print("CSV読み込みエラー:", e)
             flash("CSVの読み込みに失敗しました", "error")
             return render_template("upload.html")
 
         rows = []
-        required = ["start_user_type", "callee", "caller_number"]
         for i, row in enumerate(reader, start=1):
-            # Normalize headers and trim values
-            normalized = {k.strip(): (v.strip() if isinstance(v, str) else v) for k, v in row.items() if k is not None}
-            if any(not normalized.get(r) for r in required):
-                continue  # skip incomplete rows
-            content_val = (
-                normalized.get("content")
-                or normalized.get("text")
-                or normalized.get("rireki")
-                or None
-            )
-            # CSV may include a 'date' column representing the call datetime as text
-            date_val = normalized.get("date") or normalized.get("created_at") or None
+            normalized = {
+                k.strip(): (v.strip() if isinstance(v, str) else v)
+                for k, v in row.items()
+                if k is not None
+            }
+
+            # vos_log.csv に合わせた必須列チェック
+            if not (normalized.get("担当者") and normalized.get("電話番号")):
+                continue
+
             rows.append(
-                (
-                    normalized.get("start_user_type"),
-                    normalized.get("callee"),
-                    normalized.get("call_flow") or None,
-                    normalized.get("caller_number"),
-                    content_val,
-                    date_val,
-                )
-            )
+    (
+        normalized.get("ステータス") or "未設定",   # ← Noneを避ける
+        normalized.get("担当者") or "不明",
+        normalized.get("通話方向") or "不明",
+        normalized.get("電話番号") or "",
+        normalized.get("メモ") or "",
+        normalized.get("日時") or "",
+    )
+)
+
 
         if not rows:
-            flash("取り込める行がありません（必須列を確認してください）", "error")
+            flash("取り込める行がありません（CSV列名を確認してください）", "error")
             return render_template("upload.html")
 
         with get_cursor() as cur:
-            # まずデータセットを作成
             cur.execute(
                 "INSERT INTO datasets (shop_name, address, csv_name, phone) VALUES (?, ?, ?, ?)",
                 (shop_name, address, file.filename, phone),
             )
             dataset_id = cur.lastrowid
-            # 各行をデータセットに紐付けて登録
+
             cur.executemany(
                 """
                 INSERT INTO calls (dataset_id, start_user_type, callee, call_flow, caller_number, content, date)
@@ -137,6 +134,7 @@ def upload_csv():
                 """,
                 [(dataset_id, *r) for r in rows],
             )
+
         flash(f"{len(rows)}件を取り込みました", "success")
         return redirect(url_for("main.list_records"))
 
