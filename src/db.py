@@ -41,6 +41,8 @@ def init_db():
                 shop_name TEXT NOT NULL,
                 address TEXT NOT NULL,
                 csv_name TEXT DEFAULT NULL,
+                next_call_date TEXT DEFAULT NULL,
+                next_call_time TEXT DEFAULT NULL,
                 status TEXT NOT NULL DEFAULT 'active',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
@@ -82,5 +84,13 @@ def init_db():
             pass
         try:
             cur.execute("ALTER TABLE datasets ADD COLUMN phone TEXT")
+        except Exception:
+            pass
+        try:
+            cur.execute("ALTER TABLE datasets ADD COLUMN next_call_date TEXT")
+        except Exception:
+            pass
+        try:
+            cur.execute("ALTER TABLE datasets ADD COLUMN next_call_time TEXT")
         except Exception:
             pass

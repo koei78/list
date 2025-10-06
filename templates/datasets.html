@@ -10,6 +10,8 @@
           <th>店舗名</th>
           <th>住所</th>
           <th>電話</th>
+          <th>次回コール日程</th>
+          <th>次回コール時間</th>
           <th>CSV</th>
           <th>件数</th>
           <th>作成日時</th>
@@ -23,6 +25,8 @@
           <td>{{ d.shop_name }}</td>
           <td>{{ d.address }}</td>
           <td>{{ d.phone or '-' }}</td>
+          <td>{{ d.next_call_date or '-' }}</td>
+          <td>{{ d.next_call_time or '-' }}</td>
           <td>
             {% if d.csv_name %}
               <a href="{{ url_for('main.dataset_csv', dataset_id=d.id) }}">{{ d.csv_name }}</a>

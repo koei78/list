@@ -17,6 +17,18 @@
       <textarea rows="2">{{ dataset.address }}</textarea>
     </div>
 
+    <form method="post" action="{{ url_for('main.update_next_call', dataset_id=dataset.id) }}">
+      <div class="form-group">
+        <label>次回コール日程（テキスト）</label>
+        <input type="text" name="next_call_date" value="{{ dataset.next_call_date or '' }}" placeholder="例: 2025-10-10 / 来週金曜" />
+      </div>
+      <div class="form-group">
+        <label>次回コール時間（テキスト）</label>
+        <input type="text" name="next_call_time" value="{{ dataset.next_call_time or '' }}" placeholder="例: 14:00 / 午後2時" />
+      </div>
+      <button type="submit">次回コール予定を保存</button>
+    </form>
+
     
   </div>
 

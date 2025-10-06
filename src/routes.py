@@ -75,6 +75,8 @@ def upload_csv():
         shop_name = request.form.get("shop_name", "").strip()
         address = request.form.get("address", "").strip()
         phone = request.form.get("phone", "").strip()
+        next_call_date = request.form.get("next_call_date", "").strip()
+        next_call_time = request.form.get("next_call_time", "").strip()
 
         if not file or file.filename == "":
             flash("CSVファイルを選択してください", "error")
@@ -122,8 +124,8 @@ def upload_csv():
 
         with get_cursor() as cur:
             cur.execute(
-                "INSERT INTO datasets (shop_name, address, csv_name, phone) VALUES (?, ?, ?, ?)",
-                (shop_name, address, file.filename, phone),
+                "INSERT INTO datasets (shop_name, address, csv_name, phone, next_call_date, next_call_time) VALUES (?, ?, ?, ?, ?, ?)",
+                (shop_name, address, file.filename, phone, next_call_date, next_call_time),
             )
             dataset_id = cur.lastrowid
 
@@ -163,6 +165,19 @@ def discard_dataset(dataset_id: int):
     # 次のデータセットへ（従来の挙動）
     return redirect(url_for("main.list_records", after=dataset_id))
 
+
+@bp.post("/dataset/<int:dataset_id>/update_next_call")
+def update_next_call(dataset_id: int):
+    next_call_date = (request.form.get("next_call_date") or "").strip()
+    next_call_time = (request.form.get("next_call_time") or "").strip()
+    with get_cursor() as cur:
+        cur.execute(
+            "UPDATE datasets SET next_call_date=?, next_call_time=? WHERE id=?",
+            (next_call_date, next_call_time, dataset_id),
+        )
+    flash("次回コール予定を更新しました", "success")
+    # stay on list view for current dataset
+    return redirect(url_for("main.list_records"))
 
 @bp.get("/review")
 def review():
@@ -217,6 +232,8 @@ def dataset_csv(dataset_id: int):
     writer.writerow([
         "shop_name",
         "address",
+        "next_call_date",
+        "next_call_time",
         "dataset_created_at",
         "start_user_type",
         "callee",
@@ -229,6 +246,8 @@ def dataset_csv(dataset_id: int):
         writer.writerow([
             ds["shop_name"],
             ds["address"],
+            ds.get("next_call_date") or "",
+            ds.get("next_call_time") or "",
             ds["created_at"],
             r["start_user_type"],
             r["callee"],
@@ -277,6 +296,8 @@ def api_prospects_top():
         writer.writerow([
             "shop_name",
             "address",
+            "next_call_date",
+            "next_call_time",
             "dataset_created_at",
             "start_user_type",
             "callee",
@@ -289,6 +310,8 @@ def api_prospects_top():
             writer.writerow([
                 dataset.get('shop_name'),
                 dataset.get('address'),
+                dataset.get('next_call_date') or '',
+                dataset.get('next_call_time') or '',
                 dataset.get('created_at'),
                 r.get('start_user_type'),
                 r.get('callee'),
@@ -323,5 +346,11 @@ def api_prospects_top_address():
         cur.execute("SELECT caller_number FROM calls WHERE dataset_id=? ORDER BY id ASC LIMIT 1", (dataset['id'],))
         call_row = cur.fetchone()
         phone = call_row['caller_number'] if call_row and 'caller_number' in call_row.keys() else ''
-        body = json.dumps({'shop_name': dataset.get('shop_name'), 'address': dataset.get('address'), 'phone': phone}, ensure_ascii=False)
+        body = json.dumps({
+            'shop_name': dataset.get('shop_name'),
+            'address': dataset.get('address'),
+            'phone': phone,
+            'next_call_date': dataset.get('next_call_date') or '',
+            'next_call_time': dataset.get('next_call_time') or ''
+        }, ensure_ascii=False)
         return Response(body.encode('utf-8'), mimetype='application/json; charset=utf-8')
