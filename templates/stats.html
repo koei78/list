@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h4>データ統計</h4>
+  <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top: 0.5rem;">
+    <div class="dataset-card" style="min-width:200px;">
+      <div><strong>見込み数</strong></div>
+      <div style="font-size:2rem; font-weight:700; color:#2dfdff;">{{ prospect_count }}</div>
+    </div>
+    <div class="dataset-card" style="min-width:200px;">
+      <div><strong>未処理（active）</strong></div>
+      <div style="font-size:2rem; font-weight:700; color:#ff6a95;">{{ active_count }}</div>
+    </div>
+  </div>
+{% endblock %}
+

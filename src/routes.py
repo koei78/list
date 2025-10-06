@@ -354,3 +354,26 @@ def api_prospects_top_address():
             'next_call_time': dataset.get('next_call_time') or ''
         }, ensure_ascii=False)
         return Response(body.encode('utf-8'), mimetype='application/json; charset=utf-8')
+
+
+@bp.get('/stats')
+def stats_page():
+    """Render a simple stats page showing counts of prospect and unprocessed (active) datasets."""
+    with get_cursor() as cur:
+        cur.execute("SELECT COUNT(*) FROM datasets WHERE status='prospect'")
+        prospect_count = cur.fetchone()[0]
+        cur.execute("SELECT COUNT(*) FROM datasets WHERE status='active'")
+        active_count = cur.fetchone()[0]
+    return render_template('stats.html', title='統計', prospect_count=prospect_count, active_count=active_count)
+
+
+@bp.get('/api/stats')
+def api_stats():
+    """Return counts as JSON: { prospect: n, active: n }"""
+    with get_cursor() as cur:
+        cur.execute("SELECT COUNT(*) FROM datasets WHERE status='prospect'")
+        prospect_count = cur.fetchone()[0]
+        cur.execute("SELECT COUNT(*) FROM datasets WHERE status='active'")
+        active_count = cur.fetchone()[0]
+    body = json.dumps({'prospect': prospect_count, 'active': active_count}, ensure_ascii=False)
+    return Response(body.encode('utf-8'), mimetype='application/json; charset=utf-8')
