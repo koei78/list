@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h4>レビュー：データセット #{{ dataset.id }}</h4>
+  <p>
+    <strong>店舗名:</strong> {{ dataset.shop_name }}<br/>
+    <strong>住所:</strong> {{ dataset.address }}<br/>
+    <strong>CSV:</strong>
+    {% if dataset.csv_name %}
+      <a href="{{ url_for('main.dataset_csv', dataset_id=dataset.id) }}">{{ dataset.csv_name }}</a>
+    {% else %}
+      -
+    {% endif %}<br/>
+    <span class="muted">作成日時: {{ dataset.created_at }}</span>
+  </p>
+
+  {% if calls %}
+  <div style="overflow:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>開始ユーザータイプ</th>
+          <th>通話相手</th>
+          <th>通話フロー</th>
+          <th>発信者番号</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in calls %}
+        <tr>
+          <td>{{ r.id }}</td>
+          <td>{{ r.start_user_type }}</td>
+          <td>{{ r.callee }}</td>
+          <td>{{ r.call_flow or '-' }}</td>
+          <td>{{ r.caller_number }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p>このデータセットには行がありません。</p>
+  {% endif %}
+
+  <div class="actions" style="margin-top: 1rem">
+    <form class="inline" method="post" action="{{ url_for('main.mark_prospect', dataset_id=dataset.id) }}">
+      <button type="submit">見込み</button>
+    </form>
+    <form class="inline" method="post" action="{{ url_for('main.discard_dataset', dataset_id=dataset.id) }}" onsubmit="return confirm('このデータセットを削除しますか？');">
+      <button type="submit">捨てる</button>
+    </form>
+    <a class="button" href="{{ url_for('main.review', after=dataset.id) }}">次へ</a>
+  </div>
+{% endblock %}

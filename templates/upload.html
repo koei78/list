@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h4>CSV取り込み</h4>
+
+  <p class="muted">ヘッダー付きCSV（行の通話情報）と、共通の「店舗名・住所」をセットで登録します。CSVの必須列: start_user_type, callee, caller_number。任意列: call_flow, content（content は通話内容テキスト。text や rireki でも可。CSV内の店舗名・住所は無視されます）。</p>
+  <form method="post" enctype="multipart/form-data">
+    <label>CSVファイル
+      <input type="file" name="file" accept=".csv" required />
+    </label>
+    <label>店舗名（全行に適用・必須）
+      <input type="text" name="shop_name" required />
+    </label>
+    <label>住所（全行に適用・必須）
+      <input type="text" name="address" required />
+    </label>
+    <label>電話番号（全行に適用・任意）
+      <input type="text" name="phone" placeholder="090-1234-5678" />
+    </label>
+    <button type="submit">アップロード</button>
+  </form>
+
+  <details style="margin-top:1rem">
+    <summary>サンプルCSV</summary>
+<pre>start_user_type,callee,call_flow,caller_number,content
+顧客,山田太郎,一次対応,080-1234-5678,商品について問い合わせがありました。
+管理者,株式会社ABC,,03-1111-2222,折り返し希望。明日午前。</pre>
+  </details>
+{% endblock %}

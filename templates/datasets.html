@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h4>{{ title }}</h4>
+  {% if datasets %}
+  <div style="overflow:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>店舗名</th>
+          <th>住所</th>
+          <th>電話</th>
+          <th>CSV</th>
+          <th>件数</th>
+          <th>作成日時</th>
+          {% if show_actions %}<th>操作</th>{% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in datasets %}
+        <tr>
+          <td>{{ d.id }}</td>
+          <td>{{ d.shop_name }}</td>
+          <td>{{ d.address }}</td>
+          <td>{{ d.phone or '-' }}</td>
+          <td>
+            {% if d.csv_name %}
+              <a href="{{ url_for('main.dataset_csv', dataset_id=d.id) }}">{{ d.csv_name }}</a>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>{{ d.call_count }}</td>
+          <td><span class="muted">{{ d.created_at }}</span></td>
+          <td class="actions">
+            {% if show_actions %}
+            <form class="inline" method="post" action="{{ url_for('main.mark_prospect', dataset_id=d.id) }}">
+              <button type="submit">見込み</button>
+            </form>
+            {% endif %}
+            <form class="inline" method="post" action="{{ url_for('main.discard_dataset', dataset_id=d.id) }}" onsubmit="return confirm('このデータセットを削除しますか？');">
+              <input type="hidden" name="next" value="{{ request.path }}" />
+              <button type="submit">削除</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p>データがありません。</p>
+  {% endif %}
+{% endblock %}

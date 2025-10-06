@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+  {% if not dataset %}
+    <h4>データ一覧</h4>
+    <p>処理対象のデータがありません。</p>
+  {% else %}
+    <div class="left-panel">
+    <h2 style="border-bottom: 1px solid  linear-gradient(to right, #ff2d75, #ff6a95);">顧客情報</h2>
+    
+    <div class="form-group">
+      <label>名前</label>
+      <input type="text" value="{{ dataset.shop_name }}">
+    </div>
+ 
+    <div class="form-group">
+      <label>住所</label>
+      <textarea rows="2">{{ dataset.address }}</textarea>
+    </div>
+
+    
+  </div>
+
+
+    {% if calls %}
+    <div style="overflow:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>作成日時（通話）</th>
+            <th>通話相手</th>
+            <th>開始ユーザータイプ</th>
+            <th>通話フロー</th>
+            <th>発信者番号</th>
+            <th>通話履歴</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in calls %}
+          <tr>
+             <td>{{ r.date or r.created_at }}</td>
+             <td>{{ r.callee }}</td>
+            <td>{{ r.start_user_type }}</td>
+            <td>{{ r.call_flow or '-' }}</td>
+            <td>{{ r.caller_number }}</td>
+            <td><div style="white-space: pre-wrap; height:60px; width:100%; max-width:500px; overflow:auto">{{ r.content or '-' }}</div></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <p>このデータセットには行がありません。</p>
+    {% endif %}
+
+    <div class="actions" style="margin-top: 1rem">
+      <form class="inline" method="post" action="{{ url_for('main.mark_prospect', dataset_id=dataset.id) }}">
+        <button type="submit">見込み</button>
+      </form>
+      <form class="inline" method="post" action="{{ url_for('main.discard_dataset', dataset_id=dataset.id) }}" onsubmit="return confirm('このデータセットを削除しますか？');">
+        <button type="submit">捨てる</button>
+      </form>
+    </div>
+  {% endif %}
+{% endblock %}
