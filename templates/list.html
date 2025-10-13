@@ -17,6 +17,21 @@
       <textarea rows="2">{{ dataset.address }}</textarea>
     </div>
 
+    <div class="form-group">
+      <label>代表者名</label>
+      <input type="text" value="{{ dataset.top_name or '' }}">
+    </div>
+
+    <div class="form-group">
+      <label>営業時間</label>
+      <input type="text" value="{{ dataset.time or '' }}">
+    </div>
+
+    <div class="form-group">
+      <label>定休日</label>
+      <input type="text" value="{{ dataset.day or '' }}">
+    </div>
+
     <form method="post" action="{{ url_for('main.update_next_call', dataset_id=dataset.id) }}">
       <div class="form-group">
         <label>次回コール日程（テキスト）</label>

@@ -75,6 +75,10 @@ def upload_csv():
         shop_name = request.form.get("shop_name", "").strip()
         address = request.form.get("address", "").strip()
         phone = request.form.get("phone", "").strip()
+        # Additional fields from req.py
+        top_name = request.form.get("top_name", "").strip()
+        time_text = request.form.get("time", "").strip()
+        day = request.form.get("day", "").strip()
         next_call_date = request.form.get("next_call_date", "").strip()
         next_call_time = request.form.get("next_call_time", "").strip()
 
@@ -124,8 +128,8 @@ def upload_csv():
 
         with get_cursor() as cur:
             cur.execute(
-                "INSERT INTO datasets (shop_name, address, csv_name, phone, next_call_date, next_call_time) VALUES (?, ?, ?, ?, ?, ?)",
-                (shop_name, address, file.filename, phone, next_call_date, next_call_time),
+                "INSERT INTO datasets (shop_name, address, csv_name, phone, next_call_date, next_call_time, top_name, time, day) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (shop_name, address, file.filename, phone, next_call_date, next_call_time, top_name, time_text, day),
             )
             dataset_id = cur.lastrowid
 
@@ -232,6 +236,10 @@ def dataset_csv(dataset_id: int):
     writer.writerow([
         "shop_name",
         "address",
+        "phone",
+        "top_name",
+        "time",
+        "day",
         "next_call_date",
         "next_call_time",
         "dataset_created_at",
@@ -246,6 +254,10 @@ def dataset_csv(dataset_id: int):
         writer.writerow([
             ds["shop_name"],
             ds["address"],
+            ds.get("phone") or "",
+            ds.get("top_name") or "",
+            ds.get("time") or "",
+            ds.get("day") or "",
             ds.get("next_call_date") or "",
             ds.get("next_call_time") or "",
             ds["created_at"],
@@ -296,6 +308,10 @@ def api_prospects_top():
         writer.writerow([
             "shop_name",
             "address",
+            "phone",
+            "top_name",
+            "time",
+            "day",
             "next_call_date",
             "next_call_time",
             "dataset_created_at",
@@ -310,6 +326,10 @@ def api_prospects_top():
             writer.writerow([
                 dataset.get('shop_name'),
                 dataset.get('address'),
+                dataset.get('phone') or '',
+                dataset.get('top_name') or '',
+                dataset.get('time') or '',
+                dataset.get('day') or '',
                 dataset.get('next_call_date') or '',
                 dataset.get('next_call_time') or '',
                 dataset.get('created_at'),
@@ -350,8 +370,11 @@ def api_prospects_top_address():
             'shop_name': dataset.get('shop_name'),
             'address': dataset.get('address'),
             'phone': phone,
-            'next_call_date': dataset.get('next_call_date') or '',
-            'next_call_time': dataset.get('next_call_time') or ''
+            'top_name': dataset.get('top_name') or '',
+            'time': dataset.get('time') or '',
+            'day': dataset.get('day') or '',
+            'next_call_date': dataset.get('next_call_date') or '-',
+            'next_call_time': dataset.get('next_call_time') or '-'
         }, ensure_ascii=False)
         return Response(body.encode('utf-8'), mimetype='application/json; charset=utf-8')
 

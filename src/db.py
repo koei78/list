@@ -43,6 +43,10 @@ def init_db():
                 csv_name TEXT DEFAULT NULL,
                 next_call_date TEXT DEFAULT NULL,
                 next_call_time TEXT DEFAULT NULL,
+                phone TEXT DEFAULT NULL,
+                top_name TEXT DEFAULT NULL,
+                time TEXT DEFAULT NULL,
+                day TEXT DEFAULT NULL,
                 status TEXT NOT NULL DEFAULT 'active',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
@@ -92,5 +96,18 @@ def init_db():
             pass
         try:
             cur.execute("ALTER TABLE datasets ADD COLUMN next_call_time TEXT")
+        except Exception:
+            pass
+        # New fields to align with req.py (representative, business hours, holidays)
+        try:
+            cur.execute("ALTER TABLE datasets ADD COLUMN top_name TEXT")
+        except Exception:
+            pass
+        try:
+            cur.execute("ALTER TABLE datasets ADD COLUMN time TEXT")
+        except Exception:
+            pass
+        try:
+            cur.execute("ALTER TABLE datasets ADD COLUMN day TEXT")
         except Exception:
             pass

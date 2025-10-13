@@ -10,6 +10,9 @@
           <th>店舗名</th>
           <th>住所</th>
           <th>電話</th>
+          <th>代表者名</th>
+          <th>営業時間</th>
+          <th>定休日</th>
           <th>次回コール日程</th>
           <th>次回コール時間</th>
           <th>CSV</th>
@@ -25,6 +28,9 @@
           <td>{{ d.shop_name }}</td>
           <td>{{ d.address }}</td>
           <td>{{ d.phone or '-' }}</td>
+          <td>{{ d.top_name or '-' }}</td>
+          <td>{{ d.time or '-' }}</td>
+          <td>{{ d.day or '-' }}</td>
           <td>{{ d.next_call_date or '-' }}</td>
           <td>{{ d.next_call_time or '-' }}</td>
           <td>
