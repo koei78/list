@@ -74,6 +74,9 @@ def upload_csv():
         file = request.files.get("file")
         shop_name = request.form.get("shop_name", "").strip()
         address = request.form.get("address", "").strip()
+        summary = request.form.get("summary", "").strip()
+        has_homepage = 1 if request.form.get("has_homepage") in ("1", "on", "true", "True") else 0
+        homepage_url = request.form.get("homepage_url", "").strip()
         phone = request.form.get("phone", "").strip()
         # Additional fields from req.py
         top_name = request.form.get("top_name", "").strip()
@@ -128,8 +131,8 @@ def upload_csv():
 
         with get_cursor() as cur:
             cur.execute(
-                "INSERT INTO datasets (shop_name, address, csv_name, phone, next_call_date, next_call_time, top_name, time, day) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (shop_name, address, file.filename, phone, next_call_date, next_call_time, top_name, time_text, day),
+                "INSERT INTO datasets (shop_name, address, summary, has_homepage, homepage_url, csv_name, phone, next_call_date, next_call_time, top_name, time, day) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (shop_name, address, summary, has_homepage, homepage_url, file.filename, phone, next_call_date, next_call_time, top_name, time_text, day),
             )
             dataset_id = cur.lastrowid
 
@@ -145,6 +148,34 @@ def upload_csv():
         return redirect(url_for("main.list_records"))
 
     return render_template("upload.html")
+
+
+@bp.post("/dataset/<int:dataset_id>/update_summary")
+def update_summary(dataset_id: int):
+    summary = (request.form.get("summary") or "").strip()
+    with get_cursor() as cur:
+        cur.execute(
+            "UPDATE datasets SET summary=? WHERE id=?",
+            (summary, dataset_id),
+        )
+    flash("概要を更新しました", "success")
+    # stay on list view for current dataset
+    next_url = request.form.get("next")
+    if next_url:
+        return redirect(next_url)
+    return redirect(url_for("main.list_records"))
+
+
+@bp.post("/dataset/<int:dataset_id>/update_homepage")
+def update_homepage(dataset_id: int):
+    has_homepage = 1 if request.form.get("has_homepage") in ("1", "on", "true", "True") else 0
+    with get_cursor() as cur:
+        cur.execute("UPDATE datasets SET has_homepage=? WHERE id=?", (has_homepage, dataset_id))
+    flash("ホームページ有無を更新しました", "success")
+    next_url = request.form.get("next")
+    if next_url:
+        return redirect(next_url)
+    return redirect(url_for("main.list_records"))
 
 
 @bp.post("/dataset/<int:dataset_id>/prospect")
@@ -236,6 +267,8 @@ def dataset_csv(dataset_id: int):
     writer.writerow([
         "shop_name",
         "address",
+        "summary",
+        "homepage_url",
         "phone",
         "top_name",
         "time",
@@ -254,6 +287,8 @@ def dataset_csv(dataset_id: int):
         writer.writerow([
             ds["shop_name"],
             ds["address"],
+            ds["summary"],
+            ds.get("homepage_url") or "",
             ds.get("phone") or "",
             ds.get("top_name") or "",
             ds.get("time") or "",

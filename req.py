@@ -11,7 +11,9 @@ data = {
     "next_call_time":"17:00",
     "time":"平日9:00～18:00",
     "day":"土日祝",
-    "top_name":"伊藤健太"
+    "top_name":"伊藤健太",
+    "summary":"テスト店舗の概要",
+    "homepage_url":""
 }
 # ファイルデータ
 files = {

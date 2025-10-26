@@ -9,6 +9,8 @@
           <th>ID</th>
           <th>店舗名</th>
           <th>住所</th>
+          <th>概要</th>
+          <th>ホームページ</th>
           <th>電話</th>
           <th>代表者名</th>
           <th>営業時間</th>
@@ -27,6 +29,9 @@
           <td>{{ d.id }}</td>
           <td>{{ d.shop_name }}</td>
           <td>{{ d.address }}</td>
+          <td>{{ d.summary or '-' }}</td>
+          <td>{{ d.homepage_url or '-' }}</td>
+
           <td>{{ d.phone or '-' }}</td>
           <td>{{ d.top_name or '-' }}</td>
           <td>{{ d.time or '-' }}</td>

@@ -1,0 +1,98 @@
+/* Dark Luxury Design Tokens (always-on dark) */
+/* Usage: import this once in your app entry (e.g., src/main.tsx or app/globals.css) */
+
+:root {
+  /* Color primitives */
+  --lux-bg: #0B0B0E;            /* background */
+  --lux-bg-subtle: #14141A;     /* sub background */
+  --lux-border: #26262F;        /* hairline/border */
+  --lux-fg: #E6E6EB;            /* primary text */
+  --lux-muted: #A1A1AA;         /* muted text */
+  --lux-gold: #D4AF37;          /* accent 1 */
+  --lux-violet: #6C63FF;        /* accent 2 */
+
+  /* Semantic tokens (shadcn-like) */
+  --background: var(--lux-bg);
+  --foreground: var(--lux-fg);
+  --muted: color-mix(in oklab, var(--lux-bg-subtle) 80%, white);
+  --muted-foreground: var(--lux-muted);
+  --card: var(--lux-bg-subtle);
+  --card-foreground: var(--lux-fg);
+  --popover: var(--lux-bg-subtle);
+  --popover-foreground: var(--lux-fg);
+  --primary: var(--lux-gold);
+  --primary-foreground: var(--lux-bg);
+  --secondary: var(--lux-violet);
+  --secondary-foreground: var(--lux-fg);
+  --accent: var(--lux-gold);
+  --accent-foreground: var(--lux-bg);
+  --border: var(--lux-border);
+  --input: var(--lux-border);
+  --ring: var(--lux-gold);
+
+  /* Shape and shadow */
+  --radius-2xl: 1rem; /* Tailwind rounded-2xl default is 1rem */
+  --shadow-lux: 0 10px 30px rgba(0, 0, 0, 0.45);
+
+  /* Rhythm */
+  --line-height: 1.65;
+}
+
+html, body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Always-on dark: do not tie to prefers-color-scheme */
+html { color-scheme: dark; }
+
+/* Typography (Poppins for headings, Inter for body) */
+/* Include your own font loader or @import as needed. */
+body {
+  line-height: var(--line-height);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: Poppins, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  font-weight: 600;
+}
+
+/* Focus visibility: thicker, high-contrast rings */
+*:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--ring),
+    0 0 0 4px color-mix(in oklab, var(--lux-bg) 70%, black 30%);
+  border-radius: inherit;
+}
+
+/* Utility helpers for hairline inner border and glass feel */
+.lux-surface {
+  position: relative;
+  background: radial-gradient(1200px 800px at 20% -10%, rgba(255,255,255,0.02), transparent 60%),
+              linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
+  background-color: var(--card);
+  box-shadow: var(--shadow-lux);
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--border);
+}
+.lux-surface::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 1px;
+  border-radius: calc(var(--radius-2xl) - 1px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.lux-glass {
+  background-color: rgba(255,255,255,0.06); /* 6% */
+  backdrop-filter: saturate(120%) blur(6px);
+}
+
+/* Section rhythm */
+.lux-section {
+  padding-top: 6rem;  /* py-24 */
+  padding-bottom: 6rem;
+}
+

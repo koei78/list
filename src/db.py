@@ -40,6 +40,9 @@ def init_db():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 shop_name TEXT NOT NULL,
                 address TEXT NOT NULL,
+                summary TEXT DEFAULT NULL,
+                has_homepage INTEGER NOT NULL DEFAULT 0,
+                homepage_url TEXT DEFAULT NULL,
                 csv_name TEXT DEFAULT NULL,
                 next_call_date TEXT DEFAULT NULL,
                 next_call_time TEXT DEFAULT NULL,
@@ -84,6 +87,18 @@ def init_db():
             pass
         try:
             cur.execute("ALTER TABLE datasets ADD COLUMN csv_name TEXT")
+        except Exception:
+            pass
+        try:
+            cur.execute("ALTER TABLE datasets ADD COLUMN summary TEXT")
+        except Exception:
+            pass
+        try:
+            cur.execute("ALTER TABLE datasets ADD COLUMN has_homepage INTEGER NOT NULL DEFAULT 0")
+        except Exception:
+            pass
+        try:
+            cur.execute("ALTER TABLE datasets ADD COLUMN homepage_url TEXT")
         except Exception:
             pass
         try:

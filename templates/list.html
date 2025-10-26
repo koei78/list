@@ -18,6 +18,21 @@
     </div>
 
     <div class="form-group">
+      <label>公式ホームページ</label>
+      <textarea rows="2" readonly>{{ dataset.homepage_url or '' }}</textarea>
+    </div>
+
+    <form method="post" action="{{ url_for('main.update_summary', dataset_id=dataset.id) }}">
+      <div class="form-group">
+        <label>概要</label>
+        <textarea name="summary" rows="4" placeholder="店舗の概要や特記事項など">{{ dataset.summary or '' }}</textarea>
+      </div>
+      <button type="submit">概要を保存</button>
+    </form>
+
+    {# ホームページ有無の編集UIは削除（表示のみ必要なら別途対応） #}
+
+    <div class="form-group">
       <label>代表者名</label>
       <input type="text" value="{{ dataset.top_name or '' }}">
     </div>
