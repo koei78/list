@@ -65,6 +65,24 @@ def list_prospects():
     return render_template("datasets.html", title="見込み一覧", datasets=datasets, show_actions=False)
 
 
+@bp.route("/unprocessed")
+def list_unprocessed():
+    # 未処理（active）データセットの一覧表示
+    with get_cursor() as cur:
+        cur.execute(
+            """
+            SELECT d.*, COUNT(c.id) AS call_count
+            FROM datasets d
+            LEFT JOIN calls c ON c.dataset_id = d.id
+            WHERE d.status='active'
+            GROUP BY d.id
+            ORDER BY d.created_at DESC, d.id DESC
+            """
+        )
+        datasets = [dict(r) for r in cur.fetchall()]
+    return render_template("datasets.html", title="未処理一覧", datasets=datasets, show_actions=True)
+
+
 # 手動1件追加は廃止（CSV取り込みのみで登録）
 
 

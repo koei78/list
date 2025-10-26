@@ -386,6 +386,11 @@
     <span>見込み</span>
   </a>
 
+  <a href="{{ url_for('main.list_unprocessed') }}" title="未処理一覧">
+    <i class="fa fa-inbox" aria-hidden="true"></i>
+    <span>未処理</span>
+  </a>
+
   <a href="{{ url_for('main.upload_csv') }}" title="CSV取り込み">
     <i class="fa fa-upload" aria-hidden="true"></i>
     <span>CSV</span>
